@@ -18,5 +18,6 @@ def test_incomplete_json():
 
 @patch.object(WekeoAPIKeyPrompt, "check", return_value=None)
 def test_valid_arguments(api_check):
-    cml.load_source("wekeo", {"datasetId": "dummy"})
-    api_check.assert_called()
+    with patch('hda.Client'):
+        cml.load_source("wekeo", {"datasetId": "dummy"})
+        api_check.assert_called()
