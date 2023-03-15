@@ -68,7 +68,7 @@ class WekeoSource(FileSource):
         assert_query(query)
 
         self.query = query
-        self.merger = kwargs.pop("merger")
+        self.merger = kwargs.pop("merger", None)
 
         client()
 
