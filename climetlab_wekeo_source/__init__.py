@@ -63,16 +63,14 @@ def client():
 
 class WekeoSource(FileSource):
     def __init__(self, query, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
         assert_query(query)
 
         self.query = query
-        self.merger = kwargs.pop("merger", None)
 
         client()
 
-        self.path = [self._retrieve(query)]
+        path = self._retrieve(query)
+        super().__init__(path, *args, **kwargs)
 
     def _retrieve(self, query):
         def retrieve(target, query):
