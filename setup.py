@@ -38,7 +38,7 @@ setuptools.setup(
     entry_points={"climetlab.sources": ["wekeo = climetlab_wekeo_source:WekeoSource"]},
     keywords="meteorology",
     classifiers=[
-        "Development Status :: 1 - Alpha",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3",
