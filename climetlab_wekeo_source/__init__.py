@@ -1,10 +1,11 @@
 import json
 import os
 
-import hda
 import yaml
 from climetlab.sources.file import FileSource
 from climetlab.sources.prompt import APIKeyPrompt
+from hda import Client
+from hda.api import bytes_to_string
 
 
 def assert_query(value):
@@ -14,7 +15,7 @@ def assert_query(value):
         assert False, "query is not a JSON serializable"
 
     assert isinstance(value, dict), "query is not a dict"
-    assert "datasetId" in value, "missing datasetId key"
+    assert "dataset_id" in value, "missing dataset_id key"
 
 
 class WekeoAPIKeyPrompt(APIKeyPrompt):
@@ -22,12 +23,6 @@ class WekeoAPIKeyPrompt(APIKeyPrompt):
     retrieve_api_key_url = "https://www.wekeo.eu/docs/data-access"
 
     prompts = [
-        dict(
-            name="url",
-            default="https://wekeo-broker.apps.mercator.dpi.wekeo.eu/databroker",
-            title="API url",
-            validate=r"http.?://.*",
-        ),
         dict(
             name="user",
             title="Username",
@@ -52,20 +47,32 @@ def client():
     prompt.check()
 
     try:
-        return hda.Client()
+        return Client()
     except Exception as e:
         if ".hdarc" in str(e):
             prompt.ask_user_and_save()
-            return hda.Client()
+            return Client()
 
         raise
 
 
+def ask_yes_no(question):
+    while True:
+        user_input = input(question + " (yes/no): ").strip().lower()
+        if user_input in ["yes", "y"]:
+            return True
+        elif user_input in ["no", "n"]:
+            return False
+        else:
+            print("Invalid input. Please enter 'yes' or 'no'.")
+
+
 class WekeoSource(FileSource):
-    def __init__(self, query, *args, **kwargs):
+    def __init__(self, query, limit=None, *args, **kwargs):
         assert_query(query)
 
         self.query = query
+        self.limit = limit
 
         client()
 
@@ -75,12 +82,24 @@ class WekeoSource(FileSource):
     def _retrieve(self, query):
         def retrieve(target, query):
             os.makedirs(target, exist_ok=True)
-            client().search(query).download(target)
+            results = client().search(query, self.limit)
 
-        return self.cache_file(
-            retrieve,
-            query,
-        )
+            question = (
+                f"The file you are about to download is {bytes_to_string(results.volume)} big."
+                "Make sure that you have enough free space in your cache or have changed "
+                "the cache directory to a disk with enough space "
+                "(Link: https://climetlab.readthedocs.io/en/latest/guide/caching.html)"
+            )
+            user_response = ask_yes_no(question)
+            if user_response is None:
+                user_response = True
+
+            if user_response:
+                results.download(target)
+            else:
+                print("Download cancelled")
+
+        return self.cache_file(retrieve, query)
 
 
 source = WekeoSource
