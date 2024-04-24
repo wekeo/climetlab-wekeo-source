@@ -30,7 +30,7 @@ setuptools.setup(
     author="Germano Guerrini",
     author_email="germano.guerrini@gmail.com",
     license="MIT License",
-    url="https://github.com/ecmwf/climetlab-wekeo-source",
+    url="https://github.com/wekeo/climetlab-wekeo-source",
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=["climetlab", "hda"],
