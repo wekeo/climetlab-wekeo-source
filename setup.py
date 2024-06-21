@@ -19,7 +19,7 @@ def read(fname):
     return io.open(file_path, encoding="utf-8").read()
 
 
-version = "0.1.0"
+version = "0.1.1"
 
 
 setuptools.setup(
@@ -33,7 +33,7 @@ setuptools.setup(
     url="https://github.com/wekeo/climetlab-wekeo-source",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=["climetlab", "hda"],
+    install_requires=["pyyaml", "climetlab", "hda"],
     zip_safe=True,
     entry_points={"climetlab.sources": ["wekeo = climetlab_wekeo_source:WekeoSource"]},
     keywords="meteorology",
