@@ -32,6 +32,9 @@ jobs:
       matrix:
         platform: ["ubuntu-latest", "macos-latest", "windows-latest"]
         python-version: ["3.8", "3.9", "3.10"]
+        exclude:
+          - os: windows-latest
+            python-version: 3.8
 
     name: Python  ${{ matrix.python-version }} on ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}
@@ -51,11 +54,7 @@ jobs:
           pip freeze
 
       - name: Tests
-        # The repetition of the installation is due to an issue
-        # on windows/python3.8
-        run: |
-          pip install pyyaml climetlab hda
-          pytest
+        run: pytest
         env:
           HDA_USER: ${{ secrets.HDA_USER }}
           HDA_PASSWORD: ${{ secrets.HDA_PASSWORD }}
