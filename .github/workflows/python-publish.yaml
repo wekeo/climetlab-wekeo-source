@@ -51,8 +51,10 @@ jobs:
           pip freeze
 
       - name: Tests
+        # The repetition of the installation is due to an issue
+        # on windows/python3.8
         run: |
-          pip install pyyaml
+          pip install pyyaml climetlab hda
           pytest
         env:
           HDA_USER: ${{ secrets.HDA_USER }}
