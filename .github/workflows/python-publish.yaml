@@ -51,7 +51,9 @@ jobs:
           pip freeze
 
       - name: Tests
-        run: pytest
+        run: |
+          pip install pyyaml
+          pytest
         env:
           HDA_USER: ${{ secrets.HDA_USER }}
           HDA_PASSWORD: ${{ secrets.HDA_PASSWORD }}
